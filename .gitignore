@@ -1,0 +1,29 @@
+# Virtual Environments
+venv/
+.venv/
+env/
+ENV/
+
+# Python Cache & Bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.ipynb_checkpoints/
+
+# IDE & OS Files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Temporary / Scratch Files
+project_report_temp.txt
+*.tmp
+*.log
+
+# Large Datasets (> 10MB)
+data/raw/
+data/processed/*.csv
+!data/processed/attack_events.csv
+!data/processed/pcap_features.csv

@@ -1,0 +1,35 @@
+Variance
+ack_flag_number
+Tot size
+Header_Length
+Covariance
+flow_duration
+Rate
+Srate
+Drate
+IAT
+Number
+Weight
+Radius
+Magnitue
+fin_flag_number
+syn_flag_number
+rst_flag_number
+psh_flag_number
+ece_flag_number
+cwr_flag_number
+ack_count
+syn_count
+fin_count
+rst_count
+TCP
+UDP
+ICMP
+HTTP
+DNS
+HTTPS
+Tot sum
+Min
+Max
+AVG
+Std

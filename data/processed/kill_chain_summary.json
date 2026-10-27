@@ -1,0 +1,80 @@
+{
+  "Reconnaissance": {
+    "stage": 1,
+    "icon": "\ud83d\udd0d",
+    "color": "#ff8800",
+    "desc": "Attacker maps the network",
+    "event_count": 179,
+    "first_seen": "2024-01-15 14:03:27.991092",
+    "last_seen": "2024-01-15 15:27:05.422361",
+    "avg_confidence": 0.7973815642458101,
+    "max_severity": 3,
+    "avg_rate": -0.0457541899441341,
+    "avg_size": -0.4109497206703911
+  },
+  "WebAttack": {
+    "stage": 2,
+    "icon": "\ud83c\udf10",
+    "color": "#ff4488",
+    "desc": "Attacker exploits web vulnerabilities",
+    "event_count": 243,
+    "first_seen": "2024-01-15 14:00:30.016103",
+    "last_seen": "2024-01-15 15:29:59.840840",
+    "avg_confidence": 0.713472427983539,
+    "max_severity": 6,
+    "avg_rate": -0.06884773662551445,
+    "avg_size": -0.1974074074074074
+  },
+  "C2_Botnet": {
+    "stage": 3,
+    "icon": "\ud83d\udce1",
+    "color": "#ff44ff",
+    "desc": "Attacker establishes command channel",
+    "event_count": 198,
+    "first_seen": "2024-01-15 14:12:44.738679",
+    "last_seen": "2024-01-15 14:25:45.215830",
+    "avg_confidence": 0.9964176767676769,
+    "max_severity": 8,
+    "avg_rate": -0.045959595959595964,
+    "avg_size": 0.19358585858585858
+  },
+  "LateralMovement": {
+    "stage": 4,
+    "icon": "\u2194\ufe0f",
+    "color": "#ffff00",
+    "desc": "Attacker moves through network",
+    "event_count": 178,
+    "first_seen": "2024-01-15 14:43:34.054071",
+    "last_seen": "2024-01-15 15:09:55.822427",
+    "avg_confidence": 0.8386112359550562,
+    "max_severity": 7,
+    "avg_rate": 0.008539325842696613,
+    "avg_size": 0.7799999999999998
+  },
+  "Exfiltration": {
+    "stage": 5,
+    "icon": "\ud83d\udce4",
+    "color": "#4488ff",
+    "desc": "Attacker steals data",
+    "event_count": 189,
+    "first_seen": "2024-01-15 14:00:53.231506",
+    "last_seen": "2024-01-15 15:16:17.848651",
+    "avg_confidence": 0.781957671957672,
+    "max_severity": 9,
+    "avg_rate": -0.06439153439153442,
+    "avg_size": 0.16439153439153437
+  },
+  "DDoS": {
+    "stage": 6,
+    "icon": "\ud83d\udca5",
+    "color": "#ff4444",
+    "desc": "Attacker floods as smokescreen",
+    "event_count": 200,
+    "first_seen": "2024-01-15 14:25:49.915530",
+    "last_seen": "2024-01-15 14:37:52.166905",
+    "avg_confidence": 0.994045,
+    "max_severity": 5,
+    "avg_rate": 0.2551999999999999,
+    "avg_size": -0.6368499999999999
+  }
+}

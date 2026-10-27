@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="FedForensic — AI-powered network forensics dashboard for threat detection and kill chain analysis." />
+  <title>FedForensic · SOC Dashboard</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Nunito:wght@600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- Ambient background glow — purely decorative -->
+  <div class="bg-ambient" aria-hidden="true">
+    <div class="bg-blob bg-blob--blue"></div>
+    <div class="bg-blob bg-blob--purple"></div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════ LAYOUT -->
+  <div class="layout">
+
+    <!-- ─── Sidebar ──────────────────────────────────────────────────── -->
+    <aside class="sidebar" id="sidebar">
+
+      <div class="sidebar__brand">
+        <!-- Shield SVG logo -->
+        <svg class="brand-logo" viewBox="0 0 36 40" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M18 2L4 8v12c0 8.284 6.055 14.608 14 16 7.945-1.392 14-7.716 14-16V8L18 2z" fill="url(#shield-grad)" stroke="rgba(255,255,255,0.12)" stroke-width="1"/>
+          <text x="18" y="26" text-anchor="middle" font-family="Inter, sans-serif" font-size="11" font-weight="700" fill="white" letter-spacing="0.5">FF</text>
+          <defs>
+            <linearGradient id="shield-grad" x1="4" y1="2" x2="32" y2="40" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#2563eb" />
+              <stop offset="100%" stop-color="#1e3a8a" />
+            </linearGradient>
+          </defs>
+        </svg>
+        <div class="brand-text">
+          <span class="brand-name">FedForensic</span>
+          <span class="brand-version">v1.0  ·  SOC</span>
+        </div>
+      </div>
+
+      <!-- Threat level badge (updates dynamically) -->
+      <div class="sidebar__threat-badge" id="threatBadge" data-level="loading">
+        <span class="threat-pulse" aria-hidden="true"></span>
+        <span class="threat-label" id="threatLabel">Loading…</span>
+      </div>
+
+      <nav class="sidebar__nav" aria-label="Main navigation">
+        <a href="#overview"  class="nav-item nav-item--active" data-section="overview">
+          <svg class="nav-icon" viewBox="0 0 20 20"><rect x="2" y="2" width="7" height="7" rx="1.5"/><rect x="11" y="2" width="7" height="7" rx="1.5"/><rect x="2" y="11" width="7" height="7" rx="1.5"/><rect x="11" y="11" width="7" height="7" rx="1.5"/></svg>
+          Overview
+        </a>
+        <a href="#killchain" class="nav-item" data-section="killchain">
+          <svg class="nav-icon" viewBox="0 0 20 20"><path d="M3 10h14M13 6l4 4-4 4" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Kill Chain
+        </a>
+        <a href="#alerts"    class="nav-item" data-section="alerts">
+          <svg class="nav-icon" viewBox="0 0 20 20"><path d="M10 2a6 6 0 016 6c0 3.5-1.5 5.5-2 7H6c-.5-1.5-2-3.5-2-7a6 6 0 016-6zM8 17h4" stroke-width="1.5" stroke-linecap="round"/></svg>
+          Alerts
+        </a>
+        <a href="#narrative" class="nav-item" data-section="narrative">
+          <svg class="nav-icon" viewBox="0 0 20 20"><path d="M4 5h12M4 9h12M4 13h8" stroke-width="1.5" stroke-linecap="round"/></svg>
+          Narrative
+        </a>
+      </nav>
+
+      <!-- Model status panel -->
+      <div class="sidebar__models">
+        <p class="sidebar-section-label">Detection Models</p>
+        <ul class="model-list" id="modelList">
+          <li class="model-item"><span class="model-dot model-dot--loading"></span><span class="model-name">Master (RF)</span></li>
+          <li class="model-item"><span class="model-dot model-dot--loading"></span><span class="model-name">DDoS</span></li>
+          <li class="model-item"><span class="model-dot model-dot--loading"></span><span class="model-name">Recon</span></li>
+          <li class="model-item"><span class="model-dot model-dot--loading"></span><span class="model-name">C2 / Botnet</span></li>
+          <li class="model-item"><span class="model-dot model-dot--loading"></span><span class="model-name">Lateral Move</span></li>
+          <li class="model-item"><span class="model-dot model-dot--loading"></span><span class="model-name">Exfiltration</span></li>
+          <li class="model-item"><span class="model-dot model-dot--loading"></span><span class="model-name">Web Attack</span></li>
+        </ul>
+      </div>
+
+      <div class="sidebar__footer">
+        <span>CIC-IoT 2023 · 91.4% acc.</span>
+      </div>
+
+    </aside>
+
+    <!-- ─── Main area ─────────────────────────────────────────────────── -->
+    <div class="main">
+
+      <!-- Topbar -->
+      <header class="topbar">
+        <div class="topbar__left">
+          <div class="data-source-badge" id="dataSourceBadge">
+            <span class="source-dot"></span>
+            <span id="dataSourceLabel">Demo Data</span>
+          </div>
+          <span class="topbar-timestamp" id="analysisTimestamp"></span>
+        </div>
+        <div class="topbar__right">
+          <button class="btn btn--ghost" id="btnUpload" aria-label="Upload traffic file">
+            <svg viewBox="0 0 20 20" width="16" height="16"><path d="M10 3v10M6 7l4-4 4 4" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 15h14" stroke-width="1.5" stroke-linecap="round"/></svg>
+            Upload File
+          </button>
+          <button class="btn btn--ghost" id="btnExportCSV" aria-label="Export CSV">
+            <svg viewBox="0 0 20 20" width="15" height="15"><path d="M4 16h12M10 3v10M6 13l4 4 4-4" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            CSV
+          </button>
+          <button class="btn btn--primary" id="btnExportPDF" aria-label="Export PDF report">
+            <svg viewBox="0 0 20 20" width="15" height="15"><rect x="4" y="2" width="12" height="16" rx="2" stroke-width="1.5"/><path d="M7 7h6M7 10h6M7 13h4" stroke-width="1.5" stroke-linecap="round"/></svg>
+            Export Report
+          </button>
+        </div>
+      </header>
+
+      <!-- Scrollable content pane -->
+      <div class="content" id="contentPane">
+
+        <!-- Upload modal overlay -->
+        <div class="upload-overlay" id="uploadOverlay" aria-hidden="true" role="dialog" aria-label="Upload traffic file">
+          <div class="upload-modal">
+            <button class="upload-close" id="uploadClose" aria-label="Close">
+              <svg viewBox="0 0 20 20" width="18" height="18"><path d="M5 5l10 10M15 5L5 15" stroke-width="1.5" stroke-linecap="round"/></svg>
+            </button>
+            <div class="upload-dropzone" id="uploadDropzone">
+              <div class="upload-icon" aria-hidden="true">
+                <svg viewBox="0 0 64 64" fill="none"><circle cx="32" cy="32" r="31" stroke="rgba(37,99,235,0.3)" stroke-width="1"/><path d="M32 20v16M24 28l8-8 8 8" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M20 42h24" stroke="#2563eb" stroke-width="2" stroke-linecap="round"/></svg>
+              </div>
+              <p class="upload-label">Drop your file here</p>
+              <p class="upload-hint">Accepts <strong>.csv</strong> (CICFlowMeter) or <strong>.pcap / .pcapng</strong> (raw capture)</p>
+              <label class="btn btn--primary upload-browse" for="fileInput">Browse files</label>
+              <input type="file" id="fileInput" accept=".csv,.pcap,.pcapng,.cap" hidden />
+            </div>
+            <div class="upload-progress" id="uploadProgress" hidden>
+              <div class="progress-spinner"></div>
+              <p class="progress-label" id="progressLabel">Parsing file…</p>
+              <div class="progress-bar-wrap"><div class="progress-bar" id="progressBar"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- PCAP info bar (hidden unless PCAP was uploaded) -->
+        <div class="pcap-bar" id="pcapBar" hidden>
+          <span class="pcap-bar__label">📡 PCAP Parsed</span>
+          <span class="pcap-metric" id="pcapFlows"></span>
+          <span class="pcap-metric" id="pcapPkts"></span>
+          <span class="pcap-metric" id="pcapProtos"></span>
+          <span class="pcap-metric" id="pcapIPs"></span>
+        </div>
+
+        <!-- ── Section: Stats ──────────────────────────────────── -->
+        <section id="overview" class="stats-grid" aria-label="Key metrics">
+          <article class="stat-card" id="cardThreat">
+            <p class="stat-label">Threat Level</p>
+            <p class="stat-value" id="statThreat">—</p>
+            <div class="stat-bar" aria-hidden="true"></div>
+          </article>
+          <article class="stat-card" id="cardFlows">
+            <p class="stat-label">Total Flows</p>
+            <p class="stat-value stat-value--mono" id="statFlows">—</p>
+            <p class="stat-sub" id="statFlowsSub"></p>
+          </article>
+          <article class="stat-card" id="cardAttacks">
+            <p class="stat-label">Attack Events</p>
+            <p class="stat-value stat-value--mono stat-value--red" id="statAttacks">—</p>
+            <p class="stat-sub" id="statAttacksSub"></p>
+          </article>
+          <article class="stat-card" id="cardChain">
+            <p class="stat-label">Kill Chain</p>
+            <p class="stat-value stat-value--mono" id="statChain">—</p>
+            <p class="stat-sub">stages detected</p>
+          </article>
+          <article class="stat-card" id="cardConf">
+            <p class="stat-label">Avg Confidence</p>
+            <p class="stat-value stat-value--mono stat-value--blue" id="statConf">—</p>
+            <p class="stat-sub">model certainty</p>
+          </article>
+        </section>
+
+        <!-- ── Section: Kill Chain ────────────────────────────── -->
+        <section id="killchain" class="section" aria-label="Cyber Kill Chain">
+          <div class="section-header">
+            <h2 class="section-title">Cyber Kill Chain</h2>
+            <span class="section-badge" id="kcStageBadge">Lockheed Martin Model</span>
+          </div>
+          <div class="kill-chain" id="killChainNodes" role="list" aria-label="Kill chain stages"></div>
+        </section>
+
+        <!-- ── Section: Charts ────────────────────────────────── -->
+        <div class="charts-grid" aria-label="Analysis charts">
+          <div class="chart-card">
+            <div class="chart-card__header">
+              <h3 class="chart-title">Attack Timeline</h3>
+              <span class="chart-subtitle" id="timelineSubtitle"></span>
+            </div>
+            <div class="chart-wrap"><canvas id="chartTimeline" aria-label="Attack timeline scatter chart"></canvas></div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-card__header">
+              <h3 class="chart-title">Threat Distribution</h3>
+              <span class="chart-subtitle" id="distSubtitle"></span>
+            </div>
+            <div class="chart-wrap chart-wrap--donut"><canvas id="chartDist" aria-label="Threat distribution donut chart"></canvas></div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-card__header">
+              <h3 class="chart-title">Confidence per Stage</h3>
+              <span class="chart-subtitle">detection certainty</span>
+            </div>
+            <div class="chart-wrap"><canvas id="chartConf" aria-label="Confidence bar chart"></canvas></div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-card__header">
+              <h3 class="chart-title">Event Volume</h3>
+              <span class="chart-subtitle">flows per threat category</span>
+            </div>
+            <div class="chart-wrap"><canvas id="chartVolume" aria-label="Event volume horizontal bar chart"></canvas></div>
+          </div>
+        </div>
+
+        <!-- ── Section: Alerts + Narrative ───────────────────── -->
+        <div class="bottom-grid">
+
+          <section id="alerts" class="panel" aria-label="Alert table">
+            <div class="panel__header">
+              <h3 class="panel-title">Top Alerts</h3>
+              <div class="table-controls">
+                <select class="table-filter" id="alertFilter" aria-label="Filter by threat type">
+                  <option value="all">All threats</option>
+                  <option value="DDoS">DDoS</option>
+                  <option value="C2_Botnet">C2 / Botnet</option>
+                  <option value="Reconnaissance">Reconnaissance</option>
+                  <option value="LateralMovement">Lateral Movement</option>
+                  <option value="Exfiltration">Exfiltration</option>
+                  <option value="WebAttack">Web Attack</option>
+                </select>
+                <span class="table-count" id="alertCount"></span>
+              </div>
+            </div>
+            <div class="table-scroll">
+              <table class="alert-table" id="alertTable">
+                <thead>
+                  <tr>
+                    <th class="sortable" data-col="timestamp">Time<span class="sort-arrow"></span></th>
+                    <th class="sortable" data-col="predicted">Threat<span class="sort-arrow"></span></th>
+                    <th class="sortable" data-col="confidence">Confidence<span class="sort-arrow"></span></th>
+                    <th class="sortable" data-col="severity">Severity<span class="sort-arrow"></span></th>
+                  </tr>
+                </thead>
+                <tbody id="alertTbody"></tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="narrative" class="panel panel--terminal" aria-label="Incident narrative">
+            <div class="panel__header">
+              <h3 class="panel-title">Incident Narrative</h3>
+              <span class="terminal-badge">● LIVE</span>
+            </div>
+            <div class="terminal-body">
+              <pre class="terminal-text" id="narrativeText">Loading analysis…</pre>
+              <span class="cursor-blink" aria-hidden="true">█</span>
+            </div>
+          </section>
+
+        </div>
+
+        <footer class="page-footer">
+          FedForensic · CIC-IoT 2023 · 7 ML Models · Lockheed Martin Kill Chain
+        </footer>
+
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

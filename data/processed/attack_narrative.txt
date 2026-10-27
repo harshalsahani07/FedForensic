@@ -1,0 +1,82 @@
+=================================================================
+  ATTACK TIMELINE NARRATIVE
+=================================================================
+
+  ⚠️  THREAT LEVEL    : CRITICAL
+  📊 TOTAL EVENTS    : 1,187 attack flows detected
+  🔗 KILL CHAIN      : 6 of 6 stages observed
+  ✅ BENIGN TRAFFIC  : 0 normal flows
+
+  ⏱️  ATTACK WINDOW   : 14:00:30 → 15:29:59 (0 days 01:29:29)
+
+─────────────────────────────────────────────────────────────────
+  STAGE-BY-STAGE BREAKDOWN
+─────────────────────────────────────────────────────────────────
+
+  🔍  Stage 1 — RECONNAISSANCE
+     Time      : 14:03:27
+     Events    : 179 flows
+     Confidence: 79.7%
+     Severity  : ███ (3/10)
+     Meaning   : Attacker maps the network
+     Detail    : Avg packet rate -0.0/s — slow stealth scan
+
+  🌐  Stage 2 — WEBATTACK
+     Time      : 14:00:30  (+0:00:00 after previous stage)
+     Events    : 243 flows
+     Confidence: 71.3%
+     Severity  : ██████ (6/10)
+     Meaning   : Attacker exploits web vulnerabilities
+     Detail    : 243 web attack attempts detected
+
+  📡  Stage 3 — C2_BOTNET
+     Time      : 14:12:44  (+0 days 00:12:14 after previous stage)
+     Events    : 198 flows
+     Confidence: 99.6%
+     Severity  : ████████ (8/10)
+     Meaning   : Attacker establishes command channel
+     Detail    : Avg flow size 0 bytes — small beaconing pattern
+
+  ↔️  Stage 4 — LATERALMOVEMENT
+     Time      : 14:43:34  (+0 days 00:30:49 after previous stage)
+     Events    : 178 flows
+     Confidence: 83.9%
+     Severity  : ███████ (7/10)
+     Meaning   : Attacker moves through network
+     Detail    : Attacker pivoting to internal hosts
+
+  📤  Stage 5 — EXFILTRATION
+     Time      : 14:00:53  (+0:00:00 after previous stage)
+     Events    : 189 flows
+     Confidence: 78.2%
+     Severity  : █████████ (9/10)
+     Meaning   : Attacker steals data
+     Detail    : Avg 0 bytes/flow outbound — slow drip exfil
+
+  💥  Stage 6 — DDOS
+     Time      : 14:25:49  (+0 days 00:24:56 after previous stage)
+     Events    : 200 flows
+     Confidence: 99.4%
+     Severity  : █████ (5/10)
+     Meaning   : Attacker floods as smokescreen
+     Detail    : Flood rate 0.3/s — likely smokescreen during exfiltration
+
+─────────────────────────────────────────────────────────────────
+  KILL CHAIN COMPLETION
+─────────────────────────────────────────────────────────────────
+
+  [🔍 Reco]→[🌐 WebA]→[📡 C2_B]→[↔️ Late]→[📤 Exfi]→[💥 DDoS]
+
+  Detected  : Reconnaissance, WebAttack, C2_Botnet, LateralMovement, Exfiltration, DDoS
+
+─────────────────────────────────────────────────────────────────
+  RECOMMENDED ACTIONS
+─────────────────────────────────────────────────────────────────
+  🚨 URGENT: Data exfiltration detected — isolate affected hosts immediately
+  🚨 URGENT: C2 channel active — block outbound connections to C2 IPs
+  ⚠️  WARNING: Lateral movement detected — audit internal access logs
+  ⚠️  WARNING: Web attacks detected — review WAF logs and patch vulnerabilities
+  ℹ️  INFO: Reconnaissance detected — attacker is mapping your network
+  ℹ️  INFO: DDoS detected — may be smokescreen, check for simultaneous exfil
+
+=================================================================
